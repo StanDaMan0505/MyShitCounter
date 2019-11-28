@@ -9,12 +9,13 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-using System.IO;
 using SQLite;
-using MyShitCounter.DB;
 using Xamarin.Forms;
+using MyShitCounter.DB;
+using System.IO;
+using MyShitCounter.Droid.DB;
 
-[assembly: Dependency(typeof(DBNull))]
+[assembly: Dependency(typeof(DB))]
 
 namespace MyShitCounter.Droid.DB
 {
@@ -22,7 +23,8 @@ namespace MyShitCounter.Droid.DB
     {
         public SQLiteAsyncConnection GetConnection()
         {
-            var documentsPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
+            //var documentsPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
+            var documentsPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
             var path = Path.Combine(documentsPath, "MySqlite.db3");
 
             return new SQLiteAsyncConnection(path);
