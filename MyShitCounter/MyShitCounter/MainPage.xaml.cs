@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SQLite;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -18,10 +19,16 @@ namespace MyShitCounter
         Button downButton;
         ListView list;
         ObservableCollection<string> data = new ObservableCollection<string>();
+        private SQLiteAsyncConnection _connection;
+        private ObservableCollection<Entry> _entries;
+        private ListView LVMain;
 
         public MainPage()
         {
-            // InitializeComponent();
+            InitializeComponent();
+            SQLiteAsyncConnection sQLiteAsyncConnection = _connection = DependencyService.Get<DB.IDb>().GetConnection();
+
+            //KOMENTAR
             this.Padding = new Thickness(20, 20, 20, 20);
             StackLayout panel = new StackLayout { Spacing = 15 };
 
@@ -35,12 +42,12 @@ namespace MyShitCounter
                 Text = "The Bad"
             });
 
-            panel.Children.Add(list = new ListView
+            panel.Children.Add(LVMain = new ListView
             {
                 Header = "& The Ugly Truth",
                 SelectionMode = ListViewSelectionMode.None,
-                ItemsSource = data
-            });
+                ItemsSource = _entries
+            }); 
 
             upButton.Clicked += UpButton_Clicked;
             downButton.Clicked += DownButton_Clicked;
@@ -48,15 +55,42 @@ namespace MyShitCounter
             this.Content = panel;
         }
 
-        private void DownButton_Clicked(object sender, EventArgs e)
+        protected override async void OnAppearing()
         {
-            data.Add("down");
+            await _connection.CreateTableAsync<Entry>();
+            var entries = await _connection.Table<Entry>().ToListAsync();
+            _entries = new ObservableCollection<Entry>(entries);
+            LVMain.ItemsSource = _entries;
+
+            base.OnAppearing();
         }
 
-        private void UpButton_Clicked(object sender, EventArgs e)
+        async private void DownButton_Clicked(object sender, EventArgs e)
+        {
+            //data.Add(string.Concat("down", DateTime.Now));
+
+            var entry = new Entry() { DateTime = DateTime.Now, GoodBad = false };
+            await _connection.InsertAsync(entry);
+            _entries.Add(entry);
+
+        }
+
+        async private void UpButton_Clicked(object sender, EventArgs e)
         {
             //throw new NotImplementedException();
-            data.Add("Up");
+            //data.Add(string.Concat("up", DateTime.Now));
+
+            var entry = new Entry() { DateTime = DateTime.Now, GoodBad = true };
+            await _connection.InsertAsync(entry);
+            _entries.Add(entry);
         }
+    }
+
+    public class Entry
+    {
+        [PrimaryKey, AutoIncrement]
+        public int Id { get; set; }        
+        public DateTime DateTime { get; set; }
+        public bool GoodBad { get; set; }
     }
 }
