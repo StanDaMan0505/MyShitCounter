@@ -23,7 +23,8 @@ namespace MyShitCounter.Droid.DB
     {
         public SQLiteAsyncConnection GetConnection()
         {
-            var documentsPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
+            //var documentsPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
+            var documentsPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
             var path = Path.Combine(documentsPath, "MySqlite.db3");
 
             return new SQLiteAsyncConnection(path);

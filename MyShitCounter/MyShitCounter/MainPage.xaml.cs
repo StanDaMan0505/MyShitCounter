@@ -28,6 +28,10 @@ namespace MyShitCounter
             InitializeComponent();
             _connection = DependencyService.Get<DB.IDb>().GetConnection();
 
+    //        var ReturnValue = _connection.QueryAsync<Entry>("Select " +
+    //"(Select count(id) * 100 / (Select count(id) from dbo.[entry]) from dbo.[entry] where GoodBad = false ) as [false]," +
+    //"(Select count(id) * 100 / (Select count(id) from dbo.[entry]) from dbo.[entry] where GoodBad = true ) as [true]");
+
             this.Padding = new Thickness(20, 20, 20, 20);
             StackLayout panel = new StackLayout { Spacing = 15 };
 
@@ -91,13 +95,13 @@ namespace MyShitCounter
             [PrimaryKey, AutoIncrement]
             public int Id { get; set; }
             public DateTime DateTime { get; set; }
-            public bool GoodBad { get; set; }
+            public string GoodBad { get; set; }
         }
 
         async private void DownButton_Clicked(object sender, EventArgs e)
         {
             //data.Add("down");
-            var entry = new Entry { DateTime = DateTime.Now, GoodBad = false };
+            var entry = new Entry { DateTime = DateTime.Now, GoodBad = "bad" };
             await _connection.InsertAsync(entry);
             _entries.Add(entry);
         }
@@ -106,7 +110,7 @@ namespace MyShitCounter
         {
             //throw new NotImplementedException();
             //data.Add("Up");
-            var entry = new Entry() { DateTime = DateTime.Now, GoodBad = true };
+            var entry = new Entry() { DateTime = DateTime.Now, GoodBad = "good" };
             await _connection.InsertAsync(entry);
             _entries.Add(entry);
         }
